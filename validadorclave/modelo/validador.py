@@ -66,3 +66,39 @@ class ReglaValidacionGanimedes(ReglaValidacion):
             raise NoTieneCaracterEspecialError("La clave debe contener al menos un caracter especial (@, _, #, $, %)")
 
         return True
+
+
+class ReglaValidacionCalisto(ReglaValidacion):
+    def __init__(self):
+        super().__init__(longitud_esperada=6)
+
+    def contiene_calisto(self, clave: str) -> bool:
+        palabra = "calisto"
+        clave_lower = clave.lower()
+
+        i = 0
+        while i <= len(clave_lower) - len(palabra):
+            if clave_lower[i:i + len(palabra)] == palabra:
+                subcadena = clave[i:i + len(palabra)]
+
+                mayusculas_count = sum(1 for c in subcadena if c.isupper())
+
+                if mayusculas_count >= 2 and mayusculas_count < len(palabra):
+                    return True
+            i += 1
+
+        return False
+
+    def es_valida(self, clave: str) -> bool:
+        if not self._validar_longitud(clave):
+            raise NoCumpleLongitudMinimaError("La clave debe tener una longitud de más de 6 caracteres")
+
+        if not self._contiene_numero(clave):
+            raise NoTieneNumeroError("La clave debe contener al menos un número")
+
+        if not self.contiene_calisto(clave):
+            raise NoTienePalabraSecretaError(
+                "La palabra calisto debe estar escrita con al menos dos letras en mayúscula")
+
+        return True
+
